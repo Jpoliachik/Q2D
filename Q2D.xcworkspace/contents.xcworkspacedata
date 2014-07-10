@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "container:"
+      name = "Q2D">
+      <FileRef
+         location = "group:Q2D/Q2D.h">
+      </FileRef>
+      <FileRef
+         location = "group:Q2D/Q2D.m">
+      </FileRef>
+      <FileRef
+         location = "group:Q2D/Q2DSubqueue.h">
+      </FileRef>
+      <FileRef
+         location = "group:Q2D/Q2DSubqueue.m">
+      </FileRef>
+   </Group>
+   <FileRef
+      location = "group:Q2Download/Q2Download.xcodeproj">
+   </FileRef>
+</Workspace>
