@@ -11,10 +11,10 @@
          location = "group:Q2D/Q2D.m">
       </FileRef>
       <FileRef
-         location = "group:Q2D/Q2DSubqueue.h">
+         location = "group:Q2D/Q2DOperationQueue.h">
       </FileRef>
       <FileRef
-         location = "group:Q2D/Q2DSubqueue.m">
+         location = "group:Q2D/Q2DOperationQueue.m">
       </FileRef>
       <FileRef
          location = "group:Example/Q2Download.xcodeproj">

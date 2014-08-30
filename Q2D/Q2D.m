@@ -7,187 +7,359 @@
 //
 
 #import "Q2D.h"
-#import "Q2DSubqueue.h"
-
-//
-//@interface NSMutableArray (QueueAdditions)
-//- (id) dequeue;
-//- (void) enqueue:(id)obj;
-//@end
-//
-//@implementation NSMutableArray (QueueAdditions)
-//// Queues are first-in-first-out, so we remove objects from the head
-//- (id) dequeue {
-//	if ([self count] == 0) return nil;
-//    id headObject = [self objectAtIndex:0];
-//    if (headObject != nil) {
-//        [self removeObjectAtIndex:0];
-//    }
-//    return headObject;
-//}
-//
-//// Add to the tail of the queue (no one likes it when people cut in line!)
-//- (void) enqueue:(id)anObject {
-//    [self addObject:anObject];
-//    //this method automatically adds to the end of the array
-//}
-//@end
+#import "Q2DOperationQueue.h"
 
 @interface Q2D()
 @property (strong, nonatomic) NSMutableOrderedSet *mainQueue;
+@property (nonatomic) NSUInteger defaultMaxConcurrentOperations;
 @end
 
 
 @implementation Q2D
-
-const static NSString *kNameKey = @"name";
-const static NSString *kQueueKey = @"queue";
 
 - (id)init
 {
 	self = [super init];
 	if(self){
 		self.mainQueue = [NSMutableOrderedSet orderedSet];
+        self.defaultMaxConcurrentOperations = 1;
 	}
 	return self;
 }
 
-//Will return a subqueue if it exists in the main queue.
-//Will return nil if not found.
-- (Q2DSubqueue *)getSubqueueNamed:(NSString *)name
+#pragma mark - Public Methods
+
+- (void)enqueueOperation:(NSOperation *)operation withID:(NSString *)operationID toSubqueueWithID:(NSString *)subqueueID
 {
-	NSUInteger index = [self.mainQueue indexOfObject:name];
-	if(index != NSNotFound){
-		return [self.mainQueue objectAtIndex:index];
-	}else{
-		return nil;
-	}
+    @synchronized(self) {
+        
+        if (!operation || !operationID || !subqueueID) {
+            return;
+        }
+        
+        [self setOperationCompletionBlock:operation];
+        
+        Q2DOperationQueue *existingSubqueue = [self subqueueWithID:subqueueID];
+        
+        if (existingSubqueue) {
+            [existingSubqueue addOperation:operation withID:operationID];
+        } else {
+            
+            // no subqueue with that ID exists
+            Q2DOperationQueue *newSubqueue = [self createSubqueueWithID:subqueueID];
+            [newSubqueue addOperation:operation withID:operationID];
+            
+            [self.mainQueue addObject:newSubqueue];
+        }
+        
+        [self checkQueuesAndStartIfNeeded];
+
+    }
+    
 }
 
-//Will always return a subqueue
-//Either one that already exists in the queue,
-//Or will create a new one.
-- (Q2DSubqueue *)subqueueWithName:(NSString *)name
+- (void)prioritizeSubqueueWithID:(NSString *)subqueueID
 {
-	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
-	if(!subqueue){
-		//Create a new subqueue
-		subqueue = [self addSubqueueWithName:name];
-	}
-	
-	return subqueue;
+    @synchronized(self) {
+        
+        if (!subqueueID) {
+            return;
+        }
+        
+        Q2DOperationQueue *subqueue = [self subqueueWithID:subqueueID];
+        if (subqueue) {
+            
+            Q2DOperationQueue *currentTopQueue = [self.mainQueue firstObject];
+            if (currentTopQueue) {
+                [currentTopQueue setSuspended:YES];
+            }
+            
+            NSUInteger index = [self.mainQueue indexOfObject:subqueue];
+            [self.mainQueue moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:index] toIndex:0];
+            
+            [self checkQueuesAndStartIfNeeded];
+        }
+        
+    }
 }
 
-- (Q2DSubqueue *)addSubqueueWithName:(NSString *)name
+- (void)setPriorityLevel:(NSOperationQueuePriority)priority forOperationWithID:(NSString *)operationID inSubqueueID:(NSString *)subqueueID
 {
-	Q2DSubqueue *newQueue = [[Q2DSubqueue alloc] initWithName:name];
-	
-	[self.mainQueue addObject:newQueue];
-	
-	//Send message so the delegate knows the subqueue was added to the main queue and is awaiting download.
-	if([self.delegate respondsToSelector:@selector(subqueueWasAdded:)]){
-		[self.delegate subqueueDidBegin:name];
-	}
-	
-	return newQueue;
+    @synchronized(self) {
+        
+        if (!priority || !operationID || !subqueueID) {
+            return;
+        }
+        
+        Q2DOperationQueue *subqueue = [self subqueueWithID:subqueueID];
+        if (subqueue) {
+            [subqueue setQueuePriority:priority forID:operationID];
+        }
+        
+    }
 }
 
-- (void)removeSubqueueWithName:(NSString *)name asCompleted:(BOOL)asCompleted
+- (void)cancelOperationWithID:(NSString *)operationID inSubqueueWithID:(NSString *)subqueueID
 {
-	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
-	if(subqueue){
-		//Remove from main queue
-		[self.mainQueue removeObject:subqueue];
-		
-		//Send delegate messages
-		if([self.delegate respondsToSelector:@selector(subqueueWasRemoved:)]){
-			[self.delegate subqueueWasRemoved:name];
-		}
-		
-		if(asCompleted && [self.delegate respondsToSelector:@selector(subqueueDidComplete:)]){
-			[self.delegate subqueueDidComplete:name];
-		}
-		
-		if(self.mainQueue.count == 0 && [self.delegate respondsToSelector:@selector(queueDidComplete)]){
-			[self.delegate queueDidComplete];
-		}
-	}
+    @synchronized(self) {
+        
+        if (!operationID || !subqueueID){
+            return;
+        }
+        
+        Q2DOperationQueue *subqueue = [self subqueueWithID:subqueueID];
+        if (subqueue) {
+            [subqueue cancelOperationWithID:operationID];
+        }
+    }
 }
 
-- (void)moveSubqueueToTop:(NSString *)name
+- (void)cancelSubqueueWithID:(NSString *)subqueueID
 {
-	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
-	if(subqueue && [self.mainQueue firstObject] != name){
-		NSUInteger indexOfObject = [self.mainQueue indexOfObject:subqueue];
-		[self.mainQueue moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:indexOfObject] toIndex:0];
-	}
+    @synchronized(self) {
+        
+        if (!subqueueID) {
+            return;
+        }
+        
+        Q2DOperationQueue *subqueue = [self subqueueWithID:subqueueID];
+        if (subqueue) {
+            [self removeSubqueue:subqueue asCompleted:NO];
+        }
+    }
 }
 
-- (void)moveSubqueueToBottom:(NSString *)name
+
+#pragma mark - Private Methods
+
+- (void)checkQueuesAndStartIfNeeded
 {
-	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
-	if(subqueue && [self.mainQueue lastObject] != name){
-		NSUInteger indexOfObject = [self.mainQueue indexOfObject:subqueue];
-		[self.mainQueue moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:indexOfObject] toIndex:self.mainQueue.count - 1];
-	}
+    Q2DOperationQueue *topQueue = [self.mainQueue firstObject];
+    if (topQueue) {
+        
+        // if the queue at the top is empty, remove it
+        if ( topQueue.operationCount == 0 ) {
+            
+            [self removeSubqueue:topQueue asCompleted:YES];
+            [self checkQueuesAndStartIfNeeded];
+            
+        } else {
+            
+            // new top queue. start the operations.
+            [topQueue setSuspended:NO];
+            
+            if ( [self.delegate respondsToSelector:@selector(subqueueDidBegin:)] ) {
+                [self.delegate subqueueDidBegin:topQueue.name];
+            }
+        }
+    }
 }
 
-- (void)enqueueObject:(id)object toSubqueueWithName:(NSString *)name
+- (void)removeSubqueue:(Q2DOperationQueue *)subqueue asCompleted:(BOOL)completed
 {
-	if(object){
-		//Get or create the subqueue.
-		Q2DSubqueue *subqueue = [self subqueueWithName:name];
-		
-		if(![subqueue containsObject:object]){
-			[subqueue enqueue:object];
-		}
-	}
+    [subqueue cancelAllOperations];
+    [self.mainQueue removeObject:subqueue];
+    
+    // post delegate message
 }
 
-- (id)dequeueFromSubqueueWithName:(NSString *)name
+- (Q2DOperationQueue *)subqueueWithID:(NSString *)subqueueID
 {
-	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
-	if(subqueue){
-		
-		id object = [subqueue dequeue];
-		
-		if([subqueue count] == 0){
-			[self removeSubqueueWithName:name asCompleted:YES];
-		}
-		
-		return object;
-	}else{
-		return nil;
-	}
+    BOOL exists = [self.mainQueue containsObject:subqueueID];
+    if (exists) {
+        return [self.mainQueue objectAtIndex:[self.mainQueue indexOfObject:subqueueID]];
+    } else {
+        return nil;
+    }
+
 }
 
-//Returns the object at the top of the queue, but does not dequeue it.
-- (id)peek
+- (Q2DOperationQueue *)createSubqueueWithID:(NSString *)theID
 {
-	if(self.mainQueue.count > 0){
-		
-		Q2DSubqueue *subqueue = [self.mainQueue firstObject];
-		return [subqueue peek];
-
-	}else{
-		//Return nil if there are no subqueues
-		return nil;
-	}
+    Q2DOperationQueue *subqueue = [[Q2DOperationQueue alloc] init];
+    subqueue.name = theID;
+    subqueue.maxConcurrentOperationCount = self.defaultMaxConcurrentOperations;
+    [subqueue setSuspended:YES];
+    return subqueue;
 }
 
-- (id)dequeue
+- (void)setOperationCompletionBlock:(NSOperation *)operation
 {
-	//Dequeue the object from the queue at the top
-	if(self.mainQueue.count > 0){
-		
-		Q2DSubqueue *subqueue = [self.mainQueue firstObject];
-		return [self dequeueFromSubqueueWithName:subqueue.name];
-		
-	}else{
-		
-		//Return nil if there are no subqueues
-		return nil;
-	}
+    @synchronized(self ) {
+        
+        if (operation) {
+            
+            void (^existingCompletionBlock)() = operation.completionBlock;
+            [operation setCompletionBlock:^{
+                
+                // add this to the completion block to determine
+                // when to start the next NSOperationQueue
+                [self checkQueuesAndStartIfNeeded];
+                
+                if (existingCompletionBlock) {
+                    existingCompletionBlock();
+                }
+            }];
+            
+        }
+        
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+////Will return a subqueue if it exists in the main queue.
+////Will return nil if not found.
+//- (Q2DSubqueue *)getSubqueueNamed:(NSString *)name
+//{
+//	NSUInteger index = [self.mainQueue indexOfObject:name];
+//	if(index != NSNotFound){
+//		return [self.mainQueue objectAtIndex:index];
+//	}else{
+//		return nil;
+//	}
+//}
+//
+////Will always return a subqueue
+////Either one that already exists in the queue,
+////Or will create a new one.
+//- (Q2DSubqueue *)subqueueWithName:(NSString *)name
+//{
+//	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
+//	if(!subqueue){
+//		//Create a new subqueue
+//		subqueue = [self addSubqueueWithName:name];
+//	}
+//	
+//	return subqueue;
+//}
+//
+//- (Q2DSubqueue *)addSubqueueWithName:(NSString *)name
+//{
+//	Q2DSubqueue *newQueue = [[Q2DSubqueue alloc] initWithName:name];
+//	
+//	[self.mainQueue addObject:newQueue];
+//	
+//	//Send message so the delegate knows the subqueue was added to the main queue and is awaiting download.
+//	if([self.delegate respondsToSelector:@selector(subqueueWasAdded:)]){
+//		[self.delegate subqueueDidBegin:name];
+//	}
+//	
+//	return newQueue;
+//}
+//
+//- (void)removeSubqueueWithName:(NSString *)name asCompleted:(BOOL)asCompleted
+//{
+//	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
+//	if(subqueue){
+//		//Remove from main queue
+//		[self.mainQueue removeObject:subqueue];
+//		
+//		//Send delegate messages
+//		if([self.delegate respondsToSelector:@selector(subqueueWasRemoved:)]){
+//			[self.delegate subqueueWasRemoved:name];
+//		}
+//		
+//		if(asCompleted && [self.delegate respondsToSelector:@selector(subqueueDidComplete:)]){
+//			[self.delegate subqueueDidComplete:name];
+//		}
+//		
+//		if(self.mainQueue.count == 0 && [self.delegate respondsToSelector:@selector(queueDidComplete)]){
+//			[self.delegate queueDidComplete];
+//		}
+//	}
+//}
+//
+//- (void)moveSubqueueToTop:(NSString *)name
+//{
+//	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
+//	if(subqueue && [self.mainQueue firstObject] != name){
+//		NSUInteger indexOfObject = [self.mainQueue indexOfObject:subqueue];
+//		[self.mainQueue moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:indexOfObject] toIndex:0];
+//	}
+//}
+//
+//- (void)moveSubqueueToBottom:(NSString *)name
+//{
+//	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
+//	if(subqueue && [self.mainQueue lastObject] != name){
+//		NSUInteger indexOfObject = [self.mainQueue indexOfObject:subqueue];
+//		[self.mainQueue moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:indexOfObject] toIndex:self.mainQueue.count - 1];
+//	}
+//}
+//
+//- (void)enqueueObject:(id)object toSubqueueWithName:(NSString *)name
+//{
+//	if(object){
+//		//Get or create the subqueue.
+//		Q2DSubqueue *subqueue = [self subqueueWithName:name];
+//		
+//		if(![subqueue containsObject:object]){
+//			[subqueue enqueue:object];
+//		}
+//	}
+//}
+//
+//- (id)dequeueFromSubqueueWithName:(NSString *)name
+//{
+//	Q2DSubqueue *subqueue = [self getSubqueueNamed:name];
+//	if(subqueue){
+//		
+//		id object = [subqueue dequeue];
+//		
+//		if([subqueue count] == 0){
+//			[self removeSubqueueWithName:name asCompleted:YES];
+//		}
+//		
+//		return object;
+//	}else{
+//		return nil;
+//	}
+//}
+//
+////Returns the object at the top of the queue, but does not dequeue it.
+//- (id)peek
+//{
+//	if(self.mainQueue.count > 0){
+//		
+//		Q2DSubqueue *subqueue = [self.mainQueue firstObject];
+//		return [subqueue peek];
+//
+//	}else{
+//		//Return nil if there are no subqueues
+//		return nil;
+//	}
+//}
+//
+//- (id)dequeue
+//{
+//	//Dequeue the object from the queue at the top
+//	if(self.mainQueue.count > 0){
+//		
+//		Q2DSubqueue *subqueue = [self.mainQueue firstObject];
+//		return [self dequeueFromSubqueueWithName:subqueue.name];
+//		
+//	}else{
+//		
+//		//Return nil if there are no subqueues
+//		return nil;
+//	}
+//}
 
 @end

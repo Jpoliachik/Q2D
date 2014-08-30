@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "Q2D.h"
 
 @implementation AppDelegate
 
@@ -16,24 +17,30 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
-	
-	
-	//Download Queue Sample
-	
-//	NSArray *subqueueNames = @[@"blue", @"red", @"orange", @"yellow", @"green"];
-//	NSArray *urlPostfix = @[@"image1.jpg", @"image2.jpg", @"image3.jpg", @"image4.jpg"];
-//	
-//	//Add all our objects into the queue
-//	for(NSString *name in subqueueNames){
-//		
-//		for(NSString *postfix in urlPostfix){
-//			
-//			
-//			
-//		}
-//		
-//	}
-	
+    
+    Q2D *queue = [[Q2D alloc] init];
+        
+    for (int i = 0; i < 5; i++) {
+        
+        for (int j = 0; j < 6; j++) {
+            
+            NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
+                
+                NSLog(@"Block Operation %d in subqueue %d Started", j, i);
+                for ( int k = 0; k < 10000; k++ ) {
+                    
+                }
+                
+                NSLog(@"Block Operation %d in subqueue %d Done", j, i);
+                
+            }];
+            
+            [queue enqueueOperation:blockOperation withID:[NSString stringWithFormat:@"operation%d", j] toSubqueueWithID:[NSString stringWithFormat:@"subqueue%d", i]];
+            
+        }
+    }
+    
+    [queue cancelSubqueueWithID:@"subqueue0"];
 	
 	
     return YES;

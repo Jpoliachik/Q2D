@@ -22,31 +22,11 @@
 
 @property (nonatomic, weak) id<Q2DDelegate> delegate;
 
-#pragma mark - Queue Operations
+- (void)enqueueOperation:(NSOperation *)operation withID:(NSString *)operationID toSubqueueWithID:(NSString *)subqueueID;
+- (void)prioritizeSubqueueWithID:(NSString *)subqueueID;
+- (void)setPriorityLevel:(NSOperationQueuePriority)priority forOperationWithID:(NSString *)operationID inSubqueueID:(NSString *)subqueueID;
+- (void)cancelOperationWithID:(NSString *)operationID inSubqueueWithID:(NSString *)subqueueID;
+- (void)cancelSubqueueWithID:(NSString *)subqueueID;
 
-//Add an object to the queue.
-//Requires a subqueue name
-- (void)enqueueObject:(id)object toSubqueueWithName:(NSString *)name;
-
-//Remove the object from the top of the overall queue.
-- (id)dequeue;
-
-//Remove the object from the top of a specific subqueue
-- (id)dequeueFromSubqueueWithName:(NSString *)name;
-
-//Returns the object at the top of the queue, but does not remove it.
-- (id)peek;
-
-#pragma mark - Suqueue management
-
-//Removes a subqueue
-//asCompleted specifies whether or not to call the delegate method subqueueDidComplete
-- (void)removeSubqueueWithName:(NSString *)name asCompleted:(BOOL)asCompleted;
-
-//Move a subqueue to the top of the overall queue
-- (void)moveSubqueueToTop:(NSString *)name;
-
-//Move a subqueue to the bottom of the overall queue.
-- (void)moveSubqueueToBottom:(NSString *)name;
 
 @end

@@ -20,8 +20,8 @@
 		A3DB17D5196EDE2700430EBE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A3DB17D3196EDE2700430EBE /* InfoPlist.strings */; };
 		A3DB17D7196EDE2700430EBE /* Q2DownloadTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A3DB17D6196EDE2700430EBE /* Q2DownloadTests.m */; };
 		A3DB17E3196EDEE500430EBE /* Q2D.m in Sources */ = {isa = PBXBuildFile; fileRef = A3DB17E2196EDEE500430EBE /* Q2D.m */; };
-		A3DB17E6196EDFFF00430EBE /* Q2DSubqueue.m in Sources */ = {isa = PBXBuildFile; fileRef = A3DB17E5196EDFFF00430EBE /* Q2DSubqueue.m */; };
 		A3DB17E9196F080000430EBE /* Q2DownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A3DB17E8196F080000430EBE /* Q2DownloadManager.m */; };
+		D09FEF0019B22469006BC649 /* Q2DOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = D09FEEFF19B22469006BC649 /* Q2DOperationQueue.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,10 +53,10 @@
 		A3DB17D6196EDE2700430EBE /* Q2DownloadTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Q2DownloadTests.m; sourceTree = "<group>"; };
 		A3DB17E1196EDEE500430EBE /* Q2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Q2D.h; path = ../Q2D/Q2D.h; sourceTree = "<group>"; };
 		A3DB17E2196EDEE500430EBE /* Q2D.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Q2D.m; path = ../Q2D/Q2D.m; sourceTree = "<group>"; };
-		A3DB17E4196EDFFF00430EBE /* Q2DSubqueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Q2DSubqueue.h; path = ../Q2D/Q2DSubqueue.h; sourceTree = "<group>"; };
-		A3DB17E5196EDFFF00430EBE /* Q2DSubqueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Q2DSubqueue.m; path = ../Q2D/Q2DSubqueue.m; sourceTree = "<group>"; };
 		A3DB17E7196F080000430EBE /* Q2DownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Q2DownloadManager.h; sourceTree = "<group>"; };
 		A3DB17E8196F080000430EBE /* Q2DownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Q2DownloadManager.m; sourceTree = "<group>"; };
+		D09FEEFE19B22469006BC649 /* Q2DOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Q2DOperationQueue.h; path = ../Q2D/Q2DOperationQueue.h; sourceTree = "<group>"; };
+		D09FEEFF19B22469006BC649 /* Q2DOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Q2DOperationQueue.m; path = ../Q2D/Q2DOperationQueue.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,8 +161,8 @@
 			children = (
 				A3DB17E1196EDEE500430EBE /* Q2D.h */,
 				A3DB17E2196EDEE500430EBE /* Q2D.m */,
-				A3DB17E4196EDFFF00430EBE /* Q2DSubqueue.h */,
-				A3DB17E5196EDFFF00430EBE /* Q2DSubqueue.m */,
+				D09FEEFE19B22469006BC649 /* Q2DOperationQueue.h */,
+				D09FEEFF19B22469006BC649 /* Q2DOperationQueue.m */,
 			);
 			name = Q2D;
 			sourceTree = "<group>";
@@ -262,10 +262,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D09FEF0019B22469006BC649 /* Q2DOperationQueue.m in Sources */,
 				A3DB17E3196EDEE500430EBE /* Q2D.m in Sources */,
 				A3DB17C2196EDE2700430EBE /* AppDelegate.m in Sources */,
 				A3DB17E9196F080000430EBE /* Q2DownloadManager.m in Sources */,
-				A3DB17E6196EDFFF00430EBE /* Q2DSubqueue.m in Sources */,
 				A3DB17BE196EDE2700430EBE /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
