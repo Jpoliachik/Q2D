@@ -18,8 +18,14 @@
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
+    
+    // sample test use
+    
     Q2D *queue = [[Q2D alloc] init];
-        
+    
+    // create 5 subqueues
+    // 6 NSOperations within each subqueue
+    
     for (int i = 0; i < 5; i++) {
         
         for (int j = 0; j < 6; j++) {
@@ -40,6 +46,7 @@
         }
     }
     
+    // test
     [queue cancelSubqueueWithID:@"subqueue0"];
 	
 	
