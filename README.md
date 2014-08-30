@@ -2,7 +2,7 @@ Q2D
 ===
 
 A two-dimensional serial queue for NSOperations that supports quick and easy reordering,
-prioritization, and cancellation of subqueues and processes while the queue is processing.
+prioritization, and cancellation of subqueues and processes while the queue is executing.
 
 ## What to use Q2D for
 
