@@ -26,13 +26,13 @@ Q2D currently only supports serial execution.
 ##### Adding NSOperations
 ```
 NSOperation *myOperation = [[NSOperation alloc] init];
-    [queue enqueueOperation:myOperation withID:@"myUniqueOperationID" toSubqueueWithID:@"mySubqueueID"];
+[queue enqueueOperation:myOperation withID:@"myUniqueOperationID" toSubqueueWithID:@"mySubqueueID"];
 
-    // or
+// or
 
-    [queue enqueueOperationWithBlock:^{
-        // perform tasks
-    }withID:@"otherUniqueOperationID" toSubqueueWithID:@"otherSubqueueID"];
+[queue enqueueOperationWithBlock:^{
+    // perform tasks
+}withID:@"otherUniqueOperationID" toSubqueueWithID:@"otherSubqueueID"];
 ```
 Q2D will automatically start executing once NSOperations have been added
 
