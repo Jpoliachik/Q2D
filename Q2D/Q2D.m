@@ -62,6 +62,12 @@
     
 }
 
+- (void)enqueueOperationWithBlock:(void(^)())block withID:(NSString *)operationID toSubqueueWithID:(NSString *)subqueueID
+{
+    [self enqueueOperation:[NSBlockOperation blockOperationWithBlock:block] withID:operationID toSubqueueWithID:subqueueID];
+}
+
+
 - (void)prioritizeSubqueueWithID:(NSString *)subqueueID
 {
     @synchronized(self) {

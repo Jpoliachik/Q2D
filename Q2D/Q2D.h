@@ -51,6 +51,7 @@
  */
 - (void)enqueueOperation:(NSOperation *)operation withID:(NSString *)operationID toSubqueueWithID:(NSString *)subqueueID;
 
+- (void)enqueueOperationWithBlock:(void(^)())block withID:(NSString *)operationID toSubqueueWithID:(NSString *)subqueueID;
 
 
 /**
