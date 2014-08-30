@@ -155,12 +155,20 @@
             
         } else {
             
+            
+            if ( topQueue.isSuspended && [self.delegate respondsToSelector:@selector(subqueueDidBegin:)] ) {
+                [self.delegate subqueueDidBegin:topQueue.name];
+            }
+
+            
             // new top queue. start the operations.
             [topQueue setSuspended:NO];
             
-            if ( [self.delegate respondsToSelector:@selector(subqueueDidBegin:)] ) {
-                [self.delegate subqueueDidBegin:topQueue.name];
-            }
+        }
+    } else {
+        
+        if ([self.delegate respondsToSelector:@selector(queueDidComplete)]) {
+            [self.delegate queueDidComplete];
         }
     }
 }
