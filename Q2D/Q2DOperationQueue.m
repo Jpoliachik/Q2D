@@ -27,28 +27,27 @@
     return self;
 }
 
+// modified from Matt Ronge's implementation in CTUniqueOperationQueue
+//https://github.com/mronge/CTUniqueOperationQueue
 
-- (void)addOperation:(NSOperation *)operation withID:(NSString *)operationID
+- (void)addOperation:(NSOperation *)operation withID:(NSString *)theID
 {
-    if (![operationID length]) {
+    if (!operation || !theID || theID.length < 1) {
         return;
     }
     
-    if (!operation) {
-        return;
-    }
+    NSString *operationIdCopy = [theID copy];
+    __weak NSOperation *weakOperation = operation;
     
-    NSString *operationIdCopy = [operationID copy];
-    __weak NSOperation *weakOp = operation;
-    
+    // custom completion block to remove from hash table on completion
     void (^realCompletionBlock)() = operation.completionBlock;
     operation.completionBlock = ^{
         @synchronized(self) {
             // Make sure we are removing the right object, because
             // if the op was cancelled and it was replaced, we
             // don't want to remove the op that replaced it
-            NSOperation *opInQueue = [self.hashTable objectForKey:operationID];
-            if (weakOp == opInQueue) {
+            NSOperation *opInQueue = [self.hashTable objectForKey:theID];
+            if (weakOperation == opInQueue) {
                 [self.hashTable removeObjectForKey:operationIdCopy];
             }
         }
@@ -57,36 +56,34 @@
         }
     };
     
+    // add to hash table
     @synchronized(self) {
-        NSOperation *opInQueue = [self.hashTable objectForKey:operationID];
+        NSOperation *operationInQueue = [self.hashTable objectForKey:theID];
         
         // If the op isn't already in the queue or if there is one in the queue
         // but it is cancelled, we'll let another one in.
-        if (!opInQueue || opInQueue.isCancelled) {
+        if (!operationInQueue || operationInQueue.isCancelled) {
             self.hashTable[operationIdCopy] = operation;
-//            [self.hashTable setValue:operation forKey:operationIdCopy];
             
             [super addOperation:operation];
         }
     }
 }
 
-- (void)addOperationWithBlock:(void (^)(void))block withID:(NSString *)aID
-{
-    [self addOperation:[NSBlockOperation blockOperationWithBlock:block] withID:aID];
-}
-
-- (void)cancelOperationWithID:(NSString *)anID
+- (void)cancelOperationWithID:(NSString *)theID
 {
     @synchronized(self) {
-        NSOperation *op = [self.hashTable objectForKey:anID];
+        
+        NSOperation *op = [self.hashTable objectForKey:theID];
         [op cancel];
     }
 }
 
-- (NSOperation *)operationWithID:(NSString *)anID {
+- (NSOperation *)operationWithID:(NSString *)theID
+{
     @synchronized(self) {
-        NSOperation *op = [self.hashTable objectForKey:anID];
+        
+        NSOperation *op = [self.hashTable objectForKey:theID];
         return op;
     }
 }
@@ -100,30 +97,6 @@
         if (![existingOperation isExecuting] && existingOperation.queuePriority != priority) {
             
             [existingOperation setQueuePriority:priority];
-        }
-    }
-}
-- (void)addOrSetQueuePriority:(NSOperationQueuePriority)priority operation:(NSOperation *)op withID:(NSString *)anID
-{
-    @synchronized(self) {
-        NSOperation *existingOperation = [self.hashTable objectForKey:anID];
-        if (existingOperation) {
-            if ([existingOperation isExecuting]) {
-                // do nothing, too late to change priority
-            }
-            else if (existingOperation.queuePriority == priority) {
-                // do nothing, priority has not changed
-            }
-            else {
-                // http://developer.apple.com/library/mac/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationObjects/OperationObjects.html#//apple_ref/doc/uid/TP40008091-CH101-SW38 says to never modify an operation once placed in a queue, so if it has not yet started, cancel and add the same operation but with a new priority.
-                [existingOperation cancel];
-                [op setQueuePriority:priority];
-                [self addOperation:op withID:anID];
-            }
-        }
-        else {
-            [op setQueuePriority:priority];
-            [self addOperation:op withID:anID];
         }
     }
 }
@@ -141,6 +114,7 @@
     return haveEqualNames;
 }
 
+// used within Q2D to quickly lookup an operations position with indexOfObject:(NSString *)
 - (BOOL)isEqualToQueueName:(NSString *)queueName
 {
     if (!queueName){
