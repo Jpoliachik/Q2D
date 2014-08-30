@@ -19,12 +19,14 @@ Q2D currently only supports serial execution.
 
 ## Usage
 
+Import `Q2D.h`
+
 ##### Init
 ``` Q2D *queue = [[Q2D alloc] init];```
 
 
 ##### Adding NSOperations
-```
+```objective-c
 NSOperation *myOperation = [[NSOperation alloc] init];
 [queue enqueueOperation:myOperation withID:@"myUniqueOperationID" toSubqueueWithID:@"mySubqueueID"];
 
@@ -37,7 +39,7 @@ NSOperation *myOperation = [[NSOperation alloc] init];
 Q2D will automatically start executing once NSOperations have been added
 
 ##### Subqueue and Operation management
-```
+```objective-c
 [queue prioritizeSubqueueWithID:@"mySubqueueID"];
 [queue cancelSubqueueWithID:@"mySubqueueID"];
 
@@ -49,10 +51,13 @@ Prioritization and cancellation can be performed at any time
 ### Q2DDelegate
 
 Callback methods to provide queue execution updates
-```
+```objective-c
 - (void)subqueueWasAdded:(NSString *)name;
 - (void)subqueueWasCancelled:(NSString *)name;
 - (void)subqueueDidBegin:(NSString *)name;
 - (void)subqueueDidComplete:(NSString *)name;
 - (void)queueDidComplete;
 ```
+**Note**: Q2DDelegate methods are not to be relied upon. Messages could be sent more than once per subqueue, especially
+during reordering or late enqueueing. They are meant to be used as simple updates on the status of the
+queue.
