@@ -7,7 +7,6 @@
 //
 
 #import "AppDelegate.h"
-#import "Q2D.h"
 
 @implementation AppDelegate
 
@@ -23,6 +22,8 @@
     
     Q2D *queue = [[Q2D alloc] init];
     
+    queue.delegate = self;
+    
     // create 5 subqueues
     // 6 NSOperations within each subqueue
     
@@ -33,7 +34,7 @@
             NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
                 
                 NSLog(@"Block Operation %d in subqueue %d Started", j, i);
-                for ( int k = 0; k < 10000; k++ ) {
+                for ( int k = 0; k < 100000; k++ ) {
                     
                 }
                 
@@ -78,6 +79,31 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
 	// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (void)queueDidComplete
+{
+    NSLog(@"Queue Did Complete");
+}
+
+- (void)subqueueWasCancelled:(NSString *)name
+{
+    NSLog(@"Subqueue was cancelled %@", name);
+}
+
+- (void)subqueueWasAdded:(NSString *)name
+{
+    NSLog(@"Subqueue was added %@", name);
+}
+
+- (void)subqueueDidComplete:(NSString *)name
+{
+    NSLog(@"Subqueue did complete %@", name);
+}
+
+- (void)subqueueDidBegin:(NSString *)name
+{
+    NSLog(@"Subqueue did begin %@", name);
 }
 
 @end
