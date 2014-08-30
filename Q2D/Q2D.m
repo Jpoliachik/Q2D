@@ -50,6 +50,10 @@
             [newSubqueue addOperation:operation withID:operationID];
             
             [self.mainQueue addObject:newSubqueue];
+            
+            if ([self.delegate respondsToSelector:@selector(subqueueWasAdded:)]) {
+                [self.delegate subqueueWasAdded:subqueueID];
+            }
         }
         
         [self checkQueuesAndStartIfNeeded];
@@ -157,10 +161,23 @@
 
 - (void)removeSubqueue:(Q2DOperationQueue *)subqueue asCompleted:(BOOL)completed
 {
+    NSString *subqueueName = subqueue.name;
+    
     [subqueue cancelAllOperations];
     [self.mainQueue removeObject:subqueue];
     
-    // post delegate message
+    // send delegate message
+    if (completed) {
+        
+        if ([self.delegate respondsToSelector:@selector(subqueueDidComplete:)]) {
+            [self.delegate subqueueDidComplete:subqueueName];
+        }
+    } else {
+        
+        if ([self.delegate respondsToSelector:@selector(subqueueWasCancelled:)]) {
+            [self.delegate subqueueWasCancelled:subqueueName];
+        }
+    }
 }
 
 - (Q2DOperationQueue *)subqueueWithID:(NSString *)subqueueID
