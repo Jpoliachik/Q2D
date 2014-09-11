@@ -19,6 +19,14 @@ Q2D currently only supports serial execution.
 
 ## Usage
 
+Copy the files into your project:
+```
+Q2D.h
+Q2D.m
+Q2DOperationQueue.h
+Q2DOperationQueue.m
+```
+
 Import `Q2D.h`
 
 ##### Init
