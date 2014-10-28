@@ -24,6 +24,8 @@ Add this line to your podfile:
 
 ``` pod 'Q2D' ```
 
+#####v0.1#####
+
 Or copy the files into your project:
 ```
 Q2D.h
@@ -61,6 +63,27 @@ Q2D will automatically start executing once NSOperations have been added
 [queue cancelOperationWithID:@"myUniqueOperationID" inSubqueueWithID:@"mySubqueueID"];
 ```
 Prioritization and cancellation can be performed at any time
+
+##### Execution
+By default, any operations added to the queue will begin execution immediately.
+This can be configured with `startsAutomatically`
+```objective-c
+queue.startsAutomatically = NO
+```
+If `startsAutomatically` is set to NO, the queue requires `[queue resume]` call to begin execution.
+
+If changed from NO to YES while the queue contains NSOperations, it begins execution of the first operation.
+
+If changed from YES to NO, it will pause execution.
+
+##### Inspection
+Queue printout is available for debugging.
+It is recommended to call `[queue pause]` before and `[queue resume]` afterwards
+```objective-c
+[queue pause];
+[queue printContentsOfQueue];
+[queue resume];
+```
 
 ### Q2DDelegate
 
