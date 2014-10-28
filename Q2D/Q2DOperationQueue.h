@@ -12,7 +12,7 @@
  *  Q2DOperationQueue - NSOperationQueue subclass
  *  Requires an ID (NSString *) for each NSOperation object
  *
- *  Allows O(1) lookup of NSOperation objects in the queue.
+ *  Allows O(1) lookup of NSOperation objects in the queue. 
  *  Prevents duplicates with a given ID.
  *  
  *  Maintains a NSMutableDictionary with references to NSOperation objects it contains
