@@ -130,10 +130,6 @@
         if (subqueue) {
             
             [subqueue setQueuePriority:priority forIDs:operationArray];
-            
-            for (NSOperation *operation in subqueue.operations) {
-                [operation setQueuePriority:NSOperationQueuePriorityNormal];
-            }
         }
     }
 }
