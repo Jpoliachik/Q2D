@@ -54,6 +54,11 @@
         
     }
     
+    [queue setPriorityLevel:NSOperationQueuePriorityHigh forOperationWithID:@"operation10" inSubqueueID:@"subqueue20"];
+    [queue setPriorityLevel:NSOperationQueuePriorityHigh forOperations:@[@"operation12", @"operation8"] inSubqueueID:@"subqueue8"];
+    [queue setPriorityLevel:NSOperationQueuePriorityLow forAllOperationsInSubqueueID:@"subqueue8"];
+    [queue setPriorityLevel:NSOperationQueuePriorityHigh forOperations:@[@"operation5", @"operation35"] inSubqueueID:@"subqueue31"];
+    
     
     BOOL contains = [queue containsOperationWithID:@"operation9" inSubqueueWithID:@"subqueue2"];
     NSLog(@"CONTAINS %d", contains);
