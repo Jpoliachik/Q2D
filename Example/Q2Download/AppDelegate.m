@@ -21,15 +21,16 @@
     // sample test use
     
     Q2D *queue = [[Q2D alloc] init];
+    queue.startsAutomatically = NO;
     
     queue.delegate = self;
     
     // create 5 subqueues
     // 6 NSOperations within each subqueue
     
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 50; i++) {
         
-        for (int j = 0; j < 6; j++) {
+        for (int j = 0; j < 40; j++) {
             
             NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
                 
@@ -45,11 +46,25 @@
             [queue enqueueOperation:blockOperation withID:[NSString stringWithFormat:@"operation%d", j] toSubqueueWithID:[NSString stringWithFormat:@"subqueue%d", i]];
             
         }
+        
+        if (i == 40) {
+            queue.startsAutomatically = YES;
+        }
+
+        
     }
+    
+    
+    BOOL contains = [queue containsOperationWithID:@"operation9" inSubqueueWithID:@"subqueue2"];
+    NSLog(@"CONTAINS %d", contains);
+    
+    [queue pause];
+    [queue printContentsOfQueue];
+    [queue resume];
     
     // test
     [queue cancelSubqueueWithID:@"subqueue0"];
-	
+    
 	
     return YES;
 }
