@@ -116,17 +116,41 @@
 
 - (void)setPriorityLevel:(NSOperationQueuePriority)priority forOperationWithID:(NSString *)operationID inSubqueueID:(NSString *)subqueueID
 {
+    [self setPriorityLevel:priority forOperations:@[operationID] inSubqueueID:subqueueID];
+}
+
+- (void)setPriorityLevel:(NSOperationQueuePriority)priority forOperations:(NSArray *)operationArray inSubqueueID:(NSString *)subqueueID
+{
     @synchronized(self) {
-        
-        if (!priority || !operationID || !subqueueID) {
+        if (!priority || !operationArray || !subqueueID) {
             return;
         }
         
         Q2DOperationQueue *subqueue = [self subqueueWithID:subqueueID];
         if (subqueue) {
-            [subqueue setQueuePriority:priority forID:operationID];
+            
+            [subqueue setQueuePriority:priority forIDs:operationArray];
+            
+            for (NSOperation *operation in subqueue.operations) {
+                [operation setQueuePriority:NSOperationQueuePriorityNormal];
+            }
+        }
+    }
+}
+
+- (void)setPriorityLevel:(NSOperationQueuePriority)priority forAllOperationsInSubqueueID:(NSString *)subqueueID
+{
+    @synchronized(self) {
+        
+        if (!subqueueID) {
+            return;
         }
         
+        Q2DOperationQueue *subqueue = [self subqueueWithID:subqueueID];
+        if (subqueue) {
+            
+            [subqueue setAllQueuePriorities:priority];
+        }
     }
 }
 

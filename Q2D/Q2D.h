@@ -88,6 +88,23 @@
  */
 - (void)setPriorityLevel:(NSOperationQueuePriority)priority forOperationWithID:(NSString *)operationID inSubqueueID:(NSString *)subqueueID;
 
+/**
+ *  setPriorityLevel
+ *  sets the queuePriorityLevel for NSOperations
+ *
+ *  @param priority       NSOperationQueuePriorityLevel
+ *  @param operationArray array that MUST CONTAIN NSSTRING IDs of the operations to prioritize
+ *  @param subqueueID     ID of the subqueue containing the NSOperations
+ */
+- (void)setPriorityLevel:(NSOperationQueuePriority)priority forOperations:(NSArray *)operationArray inSubqueueID:(NSString *)subqueueID;
+
+/**
+ *  resetPriorityLevelForOperationsInSubqueueID
+ *  sets the priority level for all operations in a given subqueue
+ *
+ *  @param subqueueID ID of the subqueue
+ */
+- (void)resetPriorityLevelForOperationsInSubqueueID:(NSString *)subqueueID;
 
 /**
  *  cancelOperationWithID

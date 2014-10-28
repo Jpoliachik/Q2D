@@ -24,6 +24,11 @@
 - (void)addOperation:(NSOperation *)operation withID:(NSString *)theID;
 - (void)cancelOperationWithID:(NSString *)theID;
 - (NSOperation *)operationWithID:(NSString *)theID;
-- (void)setQueuePriority:(NSOperationQueuePriority)priority forID:(NSString *)theID;
+
+// sets the priority for specific queues in this subqueue
+- (void)setQueuePriority:(NSOperationQueuePriority)priority forIDs:(NSArray *)operationIDs;
+
+// sets the priority for every queue in this subqueue
+- (void)setAllQueuePriorities:(NSOperationQueuePriority)priority;
 
 @end

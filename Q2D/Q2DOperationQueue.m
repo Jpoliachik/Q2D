@@ -88,15 +88,35 @@
     }
 }
 
-- (void)setQueuePriority:(NSOperationQueuePriority)priority forID:(NSString *)theID
+- (void)setQueuePriority:(NSOperationQueuePriority)priority forIDs:(NSArray *)operationIDs
 {
     @synchronized(self) {
         
-        NSOperation *existingOperation = [self.hashTable objectForKey:theID];
-        
-        if (![existingOperation isExecuting] && existingOperation.queuePriority != priority) {
+        for (NSString *opID in operationIDs) {
             
-            [existingOperation setQueuePriority:priority];
+            if (![opID isKindOfClass:[NSString class]]) {
+                continue;
+            }
+            
+            NSOperation *existingOperation = [self.hashTable objectForKey:opID];
+            
+            if (![existingOperation isExecuting] && existingOperation.queuePriority != priority) {
+                
+                [existingOperation setQueuePriority:priority];
+            }
+        }
+    }
+}
+
+- (void)setAllQueuePriorities:(NSOperationQueuePriority)priority
+{
+    @synchronized(self) {
+        
+        for (NSOperation *op in self.operations) {
+            
+            if (![op isExecuting] && op.queuePriority != priority) {
+                [op setQueuePriority:priority];
+            }
         }
     }
 }
