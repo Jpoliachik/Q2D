@@ -17,15 +17,21 @@ prioritization, and cancellation of subqueues and processes while the queue is e
 
 Q2D currently only supports serial execution.
 
-## Usage
+## Installation
 
-Copy the files into your project:
+Cocoapods is the easiest way to install Q2D.
+Add this line to your podfile:
+
+``` pod 'Q2D' ```
+
+Or copy the files into your project:
 ```
 Q2D.h
 Q2D.m
 Q2DOperationQueue.h
 Q2DOperationQueue.m
 ```
+## Usage
 
 Import `Q2D.h`
 
@@ -69,3 +75,7 @@ Callback methods to provide queue execution updates
 **Note**: Q2DDelegate methods are not to be relied upon. Messages could be sent more than once per subqueue, especially
 during reordering or late enqueueing. They are meant to be used as simple updates on the status of the
 queue.
+
+### Future Improvements
+- Make delegate methods more reliable and consistant
+- Queue inspection methods for debugging purposes
