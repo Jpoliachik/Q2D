@@ -12,6 +12,7 @@
 @interface Q2D()
 @property (strong, nonatomic) NSMutableOrderedSet *mainQueue;
 @property (nonatomic) NSUInteger defaultMaxConcurrentOperations;
+@property (nonatomic, assign) BOOL isSuspended;
 @end
 
 
@@ -23,8 +24,21 @@
 	if(self){
 		self.mainQueue = [NSMutableOrderedSet orderedSet];
         self.defaultMaxConcurrentOperations = 1;
+        self.startsAutomatically = YES;
+        self.isSuspended = NO;
 	}
 	return self;
+}
+
+- (void)setStartsAutomatically:(BOOL)startsAutomatically
+{
+    _startsAutomatically = startsAutomatically;
+
+    if (!startsAutomatically) {
+        [self pause];
+    } else {
+        [self resume];
+    }
 }
 
 #pragma mark - Public Methods
@@ -58,7 +72,9 @@
             }
         }
         
-        [self checkQueuesAndStartIfNeeded];
+        if (self.startsAutomatically) {
+            [self checkQueuesAndStartIfNeeded];
+        }
 
     }
     
@@ -90,7 +106,9 @@
             NSUInteger index = [self.mainQueue indexOfObject:subqueue];
             [self.mainQueue moveObjectsAtIndexes:[NSIndexSet indexSetWithIndex:index] toIndex:0];
             
-            [self checkQueuesAndStartIfNeeded];
+            if (self.startsAutomatically) {
+                [self checkQueuesAndStartIfNeeded];
+            }
         }
         
     }
@@ -144,6 +162,26 @@
     }
 }
 
+#pragma mark - Execution
+
+- (void)pause
+{
+    self.isSuspended = YES;
+    
+    Q2DOperationQueue *topQueue = [self.mainQueue firstObject];
+    if (topQueue) {
+        [topQueue setSuspended:YES];
+    }
+}
+
+- (void)resume
+{
+    if (self.isSuspended) {
+        self.isSuspended = NO;
+        [self checkQueuesAndStartIfNeeded];
+    }
+}
+
 #pragma mark - Inspection
 
 - (BOOL)containsOperationWithID:(NSString *)operationID inSubqueueWithID:(NSString *)subqueueID
@@ -183,14 +221,16 @@
             
         } else {
             
-            
-            if ( topQueue.isSuspended && [self.delegate respondsToSelector:@selector(subqueueDidBegin:)] ) {
-                [self.delegate subqueueDidBegin:topQueue.name];
-            }
+            if (!self.isSuspended) {
+                if ( topQueue.isSuspended && [self.delegate respondsToSelector:@selector(subqueueDidBegin:)] ) {
+                    [self.delegate subqueueDidBegin:topQueue.name];
+                }
+                
+                
+                // new top queue. start the operations.
+                [topQueue setSuspended:NO];
 
-            
-            // new top queue. start the operations.
-            [topQueue setSuspended:NO];
+            }
             
         }
     } else {

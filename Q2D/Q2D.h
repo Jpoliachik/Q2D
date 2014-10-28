@@ -42,6 +42,18 @@
 @property (nonatomic, weak) id<Q2DDelegate> delegate;
 
 /**
+ *  sets whether the queue will automatically begin when an operation is added to the queue
+ *  if set to NO, the queue requires -resume call to begin execution
+ *  if changed from NO to YES while the queue is not empty, it begins
+ *  execution of the first operation. 
+ *  if changed from YES to NO, it will pause execution. 
+ *
+ *  default: YES
+ *
+ */
+@property (nonatomic, assign) BOOL startsAutomatically;
+
+/**
  *  enqueueOperation
  *  Adds the NSOperation to Q2D in the correct subqueue
  *
@@ -98,6 +110,20 @@
  *  @param subqueueID ID of the subqueue to cancel
  */
 - (void)cancelSubqueueWithID:(NSString *)subqueueID;
+
+/**
+ *  pauses execution of queue
+ *  this does not pause any currently executing NSOperations, it prevents the 
+ *  next operation from beginning execution.
+ */
+- (void)pause;
+
+/**
+ *  resumes execution of queue
+ *  if the queue has startsAutomatically set to NO
+ *  then this method must be called in order to begin execution
+ */
+- (void)resume;
 
 /**
  *  containsOperationWithID
