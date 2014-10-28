@@ -2,8 +2,8 @@
 Pod::Spec.new do |s|
 
   s.name         = "Q2D"
-  s.version      = "0.1"
-  s.summary      = "A two-dimensional NSOperationQueue built for easy reordering"
+  s.version      = "0.1.1"
+  s.summary      = "A two-dimensional queue for NSOperations built for easy reordering"
 
   s.homepage     = "https://github.com/Jpoliachik/Q2D"
   s.license      = "Apache"
