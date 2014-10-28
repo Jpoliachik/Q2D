@@ -19,6 +19,8 @@
  */
 @interface Q2DOperationQueue : NSOperationQueue
 
+@property (nonatomic, strong, readonly) NSMutableDictionary *hashTable;
+
 - (void)addOperation:(NSOperation *)operation withID:(NSString *)theID;
 - (void)cancelOperationWithID:(NSString *)theID;
 - (NSOperation *)operationWithID:(NSString *)theID;

@@ -99,5 +99,24 @@
  */
 - (void)cancelSubqueueWithID:(NSString *)subqueueID;
 
+/**
+ *  containsOperationWithID
+ *
+ *  searches for an operation within a specific subqueue
+ *
+ *  @param operationID ID of the NSOperation to find
+ *  @param subqueueID  ID of the subqueue to search in
+ *
+ *  @return BOOL if the operation is currently in the queue
+ */
+- (BOOL)containsOperationWithID:(NSString *)operationID inSubqueueWithID:(NSString *)subqueueID;
+
+/**
+ *  printContentsOfQueue
+ *
+ *  prints out a list of the subqueues and operations currently in the queue
+ *  useful for debugging purposes
+ */
+- (void)printContentsOfQueue;
 
 @end

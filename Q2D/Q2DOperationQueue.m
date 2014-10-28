@@ -9,7 +9,7 @@
 #import "Q2DOperationQueue.h"
 
 @interface Q2DOperationQueue()
-@property (nonatomic, strong) NSMutableDictionary *hashTable;
+@property (nonatomic, strong, readwrite) NSMutableDictionary *hashTable;
 @end
 
 @implementation Q2DOperationQueue

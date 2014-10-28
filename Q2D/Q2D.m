@@ -29,6 +29,8 @@
 
 #pragma mark - Public Methods
 
+#pragma mark - Enqueue
+
 - (void)enqueueOperation:(NSOperation *)operation withID:(NSString *)operationID toSubqueueWithID:(NSString *)subqueueID
 {
     @synchronized(self) {
@@ -67,6 +69,7 @@
     [self enqueueOperation:[NSBlockOperation blockOperationWithBlock:block] withID:operationID toSubqueueWithID:subqueueID];
 }
 
+#pragma mark - Prioritization
 
 - (void)prioritizeSubqueueWithID:(NSString *)subqueueID
 {
@@ -109,6 +112,8 @@
     }
 }
 
+#pragma mark - Cancellation
+
 - (void)cancelOperationWithID:(NSString *)operationID inSubqueueWithID:(NSString *)subqueueID
 {
     @synchronized(self) {
@@ -139,6 +144,29 @@
     }
 }
 
+#pragma mark - Inspection
+
+- (BOOL)containsOperationWithID:(NSString *)operationID inSubqueueWithID:(NSString *)subqueueID
+{
+    Q2DOperationQueue *subqueue = [self subqueueWithID:subqueueID];
+    
+    if (!subqueue) {
+        return NO;
+    }
+    
+    return ([subqueue operationWithID:operationID] != nil);
+}
+
+- (void)printContentsOfQueue
+{
+    NSMutableDictionary *contents = [NSMutableDictionary new];
+    for (Q2DOperationQueue *subqueue in self.mainQueue) {
+
+        contents[subqueue.name] = subqueue.hashTable;
+    }
+    
+    NSLog(@"Q2D Contents: %@", contents);
+}
 
 #pragma mark - Private Methods
 
