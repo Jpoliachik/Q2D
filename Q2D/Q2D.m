@@ -226,6 +226,17 @@
     NSLog(@"Q2D Contents: %@", contents);
 }
 
+- (NSString *)contentsDescription
+{
+    NSMutableArray *strings = [NSMutableArray new];
+    for (Q2DOperationQueue *subqueue in self.mainQueue) {
+        NSString *description = [NSString stringWithFormat:@"Subqueue: %@  --- Processes: %tu", subqueue.name, subqueue.hashTable.count];
+        [strings addObject:description];
+    }
+    
+    return [strings componentsJoinedByString:@" \n "];
+}
+
 #pragma mark - Private Methods
 
 - (void)checkQueuesAndStartIfNeeded

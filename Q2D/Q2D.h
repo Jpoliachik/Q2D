@@ -162,4 +162,13 @@
  */
 - (void)printContentsOfQueue;
 
+/**
+ *  contentsDescription
+ *
+ *  Used for debugging purposes
+ *  @return NSString with a list of subqueues and count of processes in each
+ */
+- (NSString *)contentsDescription;
+
+
 @end
