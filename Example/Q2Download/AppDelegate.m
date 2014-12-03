@@ -65,6 +65,7 @@
     
     [queue pause];
     [queue printContentsOfQueue];
+    NSLog(@"CONTENTS DESCRIPTION: %@", [queue contentsDescription]);
     [queue resume];
     
     // test
