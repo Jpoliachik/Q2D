@@ -59,16 +59,16 @@
     [self.queue setPriorityLevel:NSOperationQueuePriorityLow forAllOperationsInSubqueueID:@"subqueue8"];
     
     
-//    BOOL contains = [queue containsOperationWithID:@"operation9" inSubqueueWithID:@"subqueue2"];
-//    NSLog(@"CONTAINS %d", contains);
-//    
-//    [queue pause];
-//    [queue printContentsOfQueue];
-//    NSLog(@"CONTENTS DESCRIPTION: %@", [queue contentsDescription]);
-//    [queue resume];
-//    
-//    // test
-//    [queue cancelSubqueueWithID:@"subqueue0"];
+    BOOL contains = [self.queue containsOperationWithID:@"operation9" inSubqueueWithID:@"subqueue2"];
+    NSLog(@"CONTAINS %d", contains);
+    
+    [self.queue pause];
+    [self.queue printContentsOfQueue];
+    NSLog(@"CONTENTS DESCRIPTION: %@", [self.queue contentsDescription]);
+    [self.queue resume];
+    
+    // test
+    [self.queue cancelSubqueueWithID:@"subqueue0"];
 
 }
 
@@ -85,14 +85,27 @@
     [self.queue pause];
 }
 
-/*
-#pragma mark - Navigation
+#pragma mark - Q2DDelegate
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)subqueueWasAdded:(NSString *)name {
+    NSLog(@"Q2DDELEGATE SUBQUEUE WAS ADDED %@", name);
 }
-*/
+
+- (void)subqueueWasCancelled:(NSString *)name {
+    NSLog(@"Q2DDELEGATE SUBQUEUE WAS CANCELLED %@", name);
+}
+
+- (void)subqueueDidBegin:(NSString *)name {
+    NSLog(@"Q2DDELEGATE SUBQUEUE BEGAN %@", name);
+}
+
+- (void)subqueueDidComplete:(NSString *)name {
+    NSLog(@"Q2DDELEGATE SUBQUEUE COMPLETED %@", name);
+}
+
+- (void)queueDidComplete {
+    NSLog(@"Q2DDELEGATE COMPLETED");
+}
+
 
 @end

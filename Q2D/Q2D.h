@@ -53,6 +53,13 @@
  */
 @property (nonatomic, assign) BOOL startsAutomatically;
 
+/**
+ *  number of concurrent operations allowed at once
+ *  1 will run operations syncronously
+ *
+ *  default: 3
+ *
+ */
 @property (nonatomic, assign) NSUInteger maxConcurrentOperations;
 
 /**
