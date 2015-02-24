@@ -11,7 +11,6 @@
 
 @interface Q2D()
 @property (strong, nonatomic) NSMutableOrderedSet *mainQueue;
-@property (nonatomic) NSUInteger defaultMaxConcurrentOperations;
 @property (nonatomic, assign) BOOL isSuspended;
 @end
 
@@ -23,7 +22,7 @@
 	self = [super init];
 	if(self){
 		self.mainQueue = [NSMutableOrderedSet orderedSet];
-        self.defaultMaxConcurrentOperations = 1;
+        self.maxConcurrentOperations = 3;
         self.startsAutomatically = YES;
         self.isSuspended = NO;
 	}
@@ -308,7 +307,7 @@
 {
     Q2DOperationQueue *subqueue = [[Q2DOperationQueue alloc] init];
     subqueue.name = theID;
-    subqueue.maxConcurrentOperationCount = self.defaultMaxConcurrentOperations;
+    subqueue.maxConcurrentOperationCount = self.maxConcurrentOperations;
     [subqueue setSuspended:YES];
     return subqueue;
 }

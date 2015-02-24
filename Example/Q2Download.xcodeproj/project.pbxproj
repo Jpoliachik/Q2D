@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C0055361A9D1E6700FC3362 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0055341A9D1E6700FC3362 /* ViewController.m */; };
+		5C0055371A9D1E6700FC3362 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5C0055351A9D1E6700FC3362 /* ViewController.xib */; };
 		A3DB17B2196EDE2700430EBE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3DB17B1196EDE2700430EBE /* Foundation.framework */; };
 		A3DB17B4196EDE2700430EBE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3DB17B3196EDE2700430EBE /* CoreGraphics.framework */; };
 		A3DB17B6196EDE2700430EBE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3DB17B5196EDE2700430EBE /* UIKit.framework */; };
@@ -35,6 +37,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5C0055331A9D1E6700FC3362 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		5C0055341A9D1E6700FC3362 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		5C0055351A9D1E6700FC3362 /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
 		A3DB17AE196EDE2700430EBE /* Q2Download.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Q2Download.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3DB17B1196EDE2700430EBE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A3DB17B3196EDE2700430EBE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -121,6 +126,9 @@
 				A3DB17C1196EDE2700430EBE /* AppDelegate.m */,
 				A3DB17E7196F080000430EBE /* Q2DownloadManager.h */,
 				A3DB17E8196F080000430EBE /* Q2DownloadManager.m */,
+				5C0055331A9D1E6700FC3362 /* ViewController.h */,
+				5C0055341A9D1E6700FC3362 /* ViewController.m */,
+				5C0055351A9D1E6700FC3362 /* ViewController.xib */,
 				A3DB17C3196EDE2700430EBE /* Images.xcassets */,
 				A3DB17B8196EDE2700430EBE /* Supporting Files */,
 			);
@@ -243,6 +251,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A3DB17BC196EDE2700430EBE /* InfoPlist.strings in Resources */,
+				5C0055371A9D1E6700FC3362 /* ViewController.xib in Resources */,
 				A3DB17C4196EDE2700430EBE /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -262,6 +271,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C0055361A9D1E6700FC3362 /* ViewController.m in Sources */,
 				D09FEF0019B22469006BC649 /* Q2DOperationQueue.m in Sources */,
 				A3DB17E3196EDEE500430EBE /* Q2D.m in Sources */,
 				A3DB17C2196EDE2700430EBE /* AppDelegate.m in Sources */,

@@ -53,6 +53,8 @@
  */
 @property (nonatomic, assign) BOOL startsAutomatically;
 
+@property (nonatomic, assign) NSUInteger maxConcurrentOperations;
+
 /**
  *  enqueueOperation
  *  Adds the NSOperation to Q2D in the correct subqueue

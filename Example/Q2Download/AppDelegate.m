@@ -7,71 +7,19 @@
 //
 
 #import "AppDelegate.h"
+#import "ViewController.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
+    ViewController *vc = [[ViewController alloc] init];
+    self.window.rootViewController = vc;
+    
     [self.window makeKeyAndVisible];
     
-    
-    // sample test use
-    
-    Q2D *queue = [[Q2D alloc] init];
-    queue.startsAutomatically = NO;
-    
-    queue.delegate = self;
-    
-    // create 5 subqueues
-    // 6 NSOperations within each subqueue
-    
-    for (int i = 0; i < 50; i++) {
-        
-        for (int j = 0; j < 40; j++) {
-            
-            NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
-                
-                NSLog(@"Block Operation %d in subqueue %d Started", j, i);
-                for ( int k = 0; k < 100000; k++ ) {
-                    
-                }
-                
-                NSLog(@"Block Operation %d in subqueue %d Done", j, i);
-                
-            }];
-            
-            [queue enqueueOperation:blockOperation withID:[NSString stringWithFormat:@"operation%d", j] toSubqueueWithID:[NSString stringWithFormat:@"subqueue%d", i]];
-            
-        }
-        
-        if (i == 40) {
-            queue.startsAutomatically = YES;
-        }
-
-        
-    }
-    
-    [queue setPriorityLevel:NSOperationQueuePriorityHigh forOperationWithID:@"operation10" inSubqueueID:@"subqueue20"];
-    [queue setPriorityLevel:NSOperationQueuePriorityHigh forOperations:@[@"operation12", @"operation8"] inSubqueueID:@"subqueue8"];
-    [queue setPriorityLevel:NSOperationQueuePriorityLow forAllOperationsInSubqueueID:@"subqueue8"];
-    [queue setPriorityLevel:NSOperationQueuePriorityHigh forOperations:@[@"operation5", @"operation35"] inSubqueueID:@"subqueue31"];
-    
-    
-    BOOL contains = [queue containsOperationWithID:@"operation9" inSubqueueWithID:@"subqueue2"];
-    NSLog(@"CONTAINS %d", contains);
-    
-    [queue pause];
-    [queue printContentsOfQueue];
-    NSLog(@"CONTENTS DESCRIPTION: %@", [queue contentsDescription]);
-    [queue resume];
-    
-    // test
-    [queue cancelSubqueueWithID:@"subqueue0"];
-    
-	
     return YES;
 }
 

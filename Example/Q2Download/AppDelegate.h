@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Q2D.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, Q2DDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
