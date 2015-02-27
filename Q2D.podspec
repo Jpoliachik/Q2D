@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "Q2D"
-  s.version      = "0.1.3"
+  s.version      = "0.2"
   s.summary      = "A two-dimensional queue for NSOperations built for easy reordering"
 
   s.homepage     = "https://github.com/Jpoliachik/Q2D"
@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios
   s.ios.deployment_target = "5.0"
 
-  s.source       = { :git => "https://github.com/Jpoliachik/Q2D.git", :tag => "0.1.3" }
+  s.source       = { :git => "https://github.com/Jpoliachik/Q2D.git", :tag => "0.2" }
   s.source_files  = "Q2D"
   s.requires_arc = true
 end
